@@ -27,7 +27,7 @@
     ansible.builtin.file:
       path: "{{ skywalking_install_path }}"
       state: directory
-      mode: '7777'
+      mode: 0777
       owner: "{{ skywalking_user }}"
       group: "{{ skywalking_user }}"
 
@@ -48,7 +48,7 @@
       dest: "{{ skywalking_install_path }}" 
       owner: "{{ skywalking_user }}" 
       group: "{{ skywalking_user }}" 
-      mode: '7777' 
+      mode: 0777
       recurse: yes
     when: skywalking_download
 
@@ -82,7 +82,7 @@
     template: 
       src: application.yaml.j2
       dest: "{{skywalking_directory_name.stdout}}/webapp/application.yml"
-      mode: 7777
+      mode: 0777
  
   - name: oap.service file
     template: 
