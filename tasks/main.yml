@@ -123,11 +123,15 @@
 
   - name: Setup firewall-cmd for RedHat family
     ansible.posix.firewalld:
-      port: "{{ skywalking_default_port }}/{{ skywalking_default_proto }}"
+      port: "{{ item }}/{{ skywalking_default_proto }}"
       zone: public
       permanent: yes
       immediate: true
       state: enabled
+    loop:
+      - "{{ skywalking_ui_port }}"
+      - "{{ skywalking_rest_port }}"
+      - "{{ skywalking_grpc_port }}"
     when: 
     - ansible_os_family == 'RedHat'
     - services_state.ansible_facts.services["firewalld.service"] is defined
@@ -136,9 +140,13 @@
   - name: Setup ufw for Debian family
     community.general.ufw:
       state: enabled
-      port: "{{ skywalking_default_port }}"
+      port: "{{ item }}"
       proto: "{{ skywalking_default_proto }}"
       policy: allow
+    loop:
+      - "{{ skywalking_ui_port }}"
+      - "{{ skywalking_rest_port }}"
+      - "{{ skywalking_grpc_port }}"
     when: 
     - ansible_os_family == 'Debian'
     - services_state.ansible_facts.services["firewalld.service"] is defined
