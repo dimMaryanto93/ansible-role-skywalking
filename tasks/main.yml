@@ -9,6 +9,15 @@
       paths:
         - 'vars'
 
+- name: Install dependencies for installing
+  package:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - zip
+    - unzip
+    - tar
+
 - name: Setup & pre-requisites to install skywalking
   block:
   - name: Ensure group 'skywalking' exists
