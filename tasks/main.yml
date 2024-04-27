@@ -1,0 +1,103 @@
+---
+# tasks file for ansile-role-sonatype-nexus-oss
+- name: Load a variable file based on the OS type
+  include_vars: "{{ lookup('first_found', params) }}"
+  vars:
+    params:
+      files:
+        - '{{ansible_os_family}}.yaml'
+      paths:
+        - 'vars'
+
+- name: Setup & pre-requisites to install skywalking
+  block:
+  - name: Ensure group 'skywalking' exists
+    ansible.builtin.group:
+      name: "{{ skywalking_user }}"
+      state: present
+
+  - name: Add the user 'skywalking' exists
+    ansible.builtin.user:
+      name: "{{ skywalking_user }}"
+      comment: user for using nexus-oss application
+      group: "{{ skywalking_user }}"
+      append: yes
+
+  - name: Create a directory ==> {{ skywalking_install_path }} if it does not exist 
+    ansible.builtin.file:
+      path: "{{ skywalking_install_path }}"
+      state: directory
+      mode: '7777'
+      owner: "{{ skywalking_user }}"
+      group: "{{ skywalking_user }}"
+
+- name: Install skywalking packages
+  block:
+  - name: Unarchive skywalking binaries
+    ansible.builtin.unarchive:
+      remote_src: yes
+      src: "{{ skywalking_download_url }}"
+      dest: "{{ skywalking_install_path }}"
+      mode: '0777'
+      owner: "{{ skywalking_user }}"
+      group: "{{ skywalking_user }}"
+
+  - name: Give access to user 'skywalking' recusively
+    file: 
+      dest: "{{ skywalking_install_path }}" 
+      owner: "{{ skywalking_user }}" 
+      group: "{{ skywalking_user }}" 
+      mode: '0777' 
+      recurse: yes
+
+  - shell: "ls -d {{ skywalking_install_path }}/apache-skywalking-apm-bin* | tail -n 1"
+    register: skywalking_directory_name
+
+- name: Configure rule iptables & selinux
+  block:
+  - name: Put SELinux in permissive mode
+    ansible.posix.selinux:
+      policy: targeted
+      state: permissive
+    when: ansible_os_family == 'RedHat'
+
+  - name: Setup firewall-cmd for RedHat family
+    ansible.posix.firewalld:
+      port: "{{ skywalking_default_port }}/{{ skywalking_default_proto }}"
+      zone: public
+      permanent: yes
+      immediate: true
+      state: enabled
+    when: ansible_os_family == 'RedHat'
+  
+  - name: Setup ufw for Debian family
+    community.general.ufw:
+      state: enabled
+      port: "{{ skywalking_default_port }}"
+      proto: "{{ skywalking_default_proto }}"
+      policy: allow
+    when: ansible_os_family == 'Debian'
+
+- name: Create service for skywaking webapp
+  block: 
+  - name: webapp.service file
+    template: 
+      src: skywalking-webapp.service.j2 
+      dest: /etc/systemd/system/skywalking-webapp.service
+      mode: 644
+  
+  - name: oap.service file
+    template: 
+      src: skywalking-oap.service.j2 
+      dest: /etc/systemd/system/skywalking-oap.service
+      mode: 644
+  
+  - name: Restart service nexus
+    ansible.builtin.systemd:
+      state: restarted
+      daemon_reload: yes
+      enabled: yes
+      name: "{{ item }}"
+    loop:
+      - skywalking-oap.service
+      - skywalking-webapp.service
