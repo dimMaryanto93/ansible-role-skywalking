@@ -11,7 +11,7 @@ LimitNPROC={{ skywalking_ulimit_nproc | default(10240) }}
 LimitCORE={{ skywalking_ulimit_core | default('infinity') }}
 LimitMEMLOCK={{ skywalking_ulimit_core | default('infinity') }}
 
-Type=forking
+Type=simple
 #ExecStart=java -Xms{{skywalking_oap_jvm_xms}}M -Xmx{{ skywalking_oap_jvm_xmx }}M -jar {{ skywalking_directory_name.stdout }}/webapp/skywalking-webapp.jar --spring.config.location={{ skywalking_directory_name.stdout }}/webapp/application.yml
 ExecStart={{ skywalking_directory_name.stdout }}/bin/webappService.sh
 

@@ -1,54 +1,56 @@
 ---
 # tasks file for ansile-role-sonatype-nexus-oss
-# - name: Load a variable file based on the OS type
-#   include_vars: "{{ lookup('first_found', params) }}"
-#   vars:
-#     params:
-#       files:
-#         - '{{ansible_os_family}}.yaml'
-#       paths:
-#         - 'vars'
+- name: Load a variable file based on the OS type
+  include_vars: "{{ lookup('first_found', params) }}"
+  vars:
+    params:
+      files:
+        - '{{ansible_os_family}}.yaml'
+      paths:
+        - 'vars'
 
-# - name: Setup & pre-requisites to install skywalking
-#   block:
-#   - name: Ensure group 'skywalking' exists
-#     ansible.builtin.group:
-#       name: "{{ skywalking_user }}"
-#       state: present
+- name: Setup & pre-requisites to install skywalking
+  block:
+  - name: Ensure group 'skywalking' exists
+    ansible.builtin.group:
+      name: "{{ skywalking_user }}"
+      state: present
 
-#   - name: Add the user 'skywalking' exists
-#     ansible.builtin.user:
-#       name: "{{ skywalking_user }}"
-#       comment: user for using nexus-oss application
-#       group: "{{ skywalking_user }}"
-#       append: yes
+  - name: Add the user 'skywalking' exists
+    ansible.builtin.user:
+      name: "{{ skywalking_user }}"
+      comment: user for using nexus-oss application
+      group: "{{ skywalking_user }}"
+      append: yes
 
-#   - name: Create a directory ==> {{ skywalking_install_path }} if it does not exist 
-#     ansible.builtin.file:
-#       path: "{{ skywalking_install_path }}"
-#       state: directory
-#       mode: '7777'
-#       owner: "{{ skywalking_user }}"
-#       group: "{{ skywalking_user }}"
+  - name: Create a directory ==> {{ skywalking_install_path }} if it does not exist 
+    ansible.builtin.file:
+      path: "{{ skywalking_install_path }}"
+      state: directory
+      mode: '7777'
+      owner: "{{ skywalking_user }}"
+      group: "{{ skywalking_user }}"
 
 - name: Install skywalking packages
   block:
-#   - name: Unarchive skywalking binaries
-#     ansible.builtin.unarchive:
-#       remote_src: yes
-#       src: "{{ skywalking_download_url }}"
-#       dest: "{{ skywalking_install_path }}"
-#       mode: '0777'
-#       owner: "{{ skywalking_user }}"
-#       group: "{{ skywalking_user }}"
+  - name: Unarchive skywalking binaries
+    ansible.builtin.unarchive:
+      remote_src: yes
+      src: "{{ skywalking_download_url }}"
+      dest: "{{ skywalking_install_path }}"
+      mode: '0777'
+      owner: "{{ skywalking_user }}"
+      group: "{{ skywalking_user }}"
+    when: skywalking_download
 
-#   - name: Give access to user 'skywalking' recusively
-#     file: 
-#       dest: "{{ skywalking_install_path }}" 
-#       owner: "{{ skywalking_user }}" 
-#       group: "{{ skywalking_user }}" 
-#       mode: '0777' 
-#       recurse: yes
+  - name: Give access to user 'skywalking' recusively
+    file: 
+      dest: "{{ skywalking_install_path }}" 
+      owner: "{{ skywalking_user }}" 
+      group: "{{ skywalking_user }}" 
+      mode: '7777' 
+      recurse: yes
+    when: skywalking_download
 
   - shell: "ls -d {{ skywalking_install_path }}/apache-skywalking-apm-bin* | tail -n 1"
     register: skywalking_directory_name

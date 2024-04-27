@@ -6,3 +6,4 @@ skywalking_version: 9.7.0
 skywalking_download_url: https://dlcdn.apache.org/skywalking/{{ skywalking_version }}/apache-skywalking-apm-{{ skywalking_version }}.tar.gz
 skywalking_install_path: /opt
 skywalking_user: skywalking
+skywalking_download: true
