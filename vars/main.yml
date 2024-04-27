@@ -1,2 +1,6 @@
 ---
 # vars file for ansile-role-sonatype-nexus-oss
+skywalking_oap_jvm_xms: '512'
+skywalking_oap_jvm_xmx: '1024'
+skywalking_web_jvm_xms: '512'
+skywalking_web_jvm_xmx: '1024'

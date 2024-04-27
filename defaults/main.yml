@@ -1,6 +1,6 @@
 ---
 # defaults file for ansile-role-sonatype-nexus-oss
-skywalking_default_proto: '8080'
+skywalking_default_proto: 8080
 skywalking_default_port: tcp
 skywalking_version: 9.7.0
 skywalking_download_url: https://dlcdn.apache.org/skywalking/{{ skywalking_version }}/apache-skywalking-apm-{{ skywalking_version }}.tar.gz

@@ -3,16 +3,35 @@ Description=skywalking-oap
 After=network.target
 
 [Service]
+EnvironmentFile=/etc/sysconfig/skywalking-oap
+
 WorkingDirectory={{ skywalking_directory_name.stdout }}
 User={{ skywalking_user }}
+
 LimitNOFILE={{ skywalking_ulimit_nofile | default(10240) }}
 LimitNPROC={{ skywalking_ulimit_nproc | default(10240) }}
 LimitCORE={{ skywalking_ulimit_core | default('infinity') }}
 LimitMEMLOCK={{ skywalking_ulimit_core | default('infinity') }}
+
 Type=forking
-ExecStart={{ skywalking_directory_name.stdout }}/bin/oapService.sh
+ExecStartPre=mkdir -p "${OAP_LOG_DIR}"
+
+#ExecStart=java -Xms{{skywalking_oap_jvm_xms}}M -Xmx{{ skywalking_oap_jvm_xmx }}M -Doap.logDir=${OAP_LOG_DIR} -classpath {{skywalking_directory_name.stdout}}/config:{% for jar_lib in oap_classpath -%}{{jar_lib}}:{% endfor %} org.apache.skywalking.oap.server.starter.OAPServerStartUp
+ExecStart=/usr/bin/nohup {{ skywalking_directory_name.stdout }}/bin/oapService.sh
+
 Restart=always
+RestartSec=30
 PrivateTmp=true
+SuccessExitStatus=143
+
+StandardOutput=journal
+StandardError=journal
+
+KillSignal=SIGINT
+
+TimeoutStopSec=20
+StartLimitInterval=0
+StartLimitBurst=10
 
 [Install]
 WantedBy=multi-user.target
