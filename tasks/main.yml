@@ -116,6 +116,7 @@
       - "{{ skywalking_ui_port }}"
       - "{{ skywalking_rest_port }}"
       - "{{ skywalking_grpc_port }}"
+      - "{{ skywalking_zipkin_port }}"
     when: 
     - ansible_os_family == 'RedHat'
     - services_state.ansible_facts.services["firewalld.service"] is defined
@@ -131,6 +132,7 @@
       - "{{ skywalking_ui_port }}"
       - "{{ skywalking_rest_port }}"
       - "{{ skywalking_grpc_port }}"
+      - "{{ skywalking_zipkin_port }}"
     when: 
     - ansible_os_family == 'Debian'
     - services_state.ansible_facts.services["firewalld.service"] is defined
