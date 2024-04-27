@@ -64,16 +64,6 @@
   - shell: "ls -d {{ skywalking_install_path }}/apache-skywalking-apm-bin* | tail -n 1"
     register: skywalking_directory_name
 
-  - name: skywalking-oap.env file
-    template: 
-      src: templates/skywalking-oap.env.j2
-      dest: /etc/sysconfig/skywalking-oap
-      mode: 7777
-
-  - name: filter skywalking-oap classpath files
-    set_fact:
-      oap_classpath: "{{ oap_jars.files | map(attribute='path') }}"
-
 - name: Create service for skywaking webapp
   block: 
   - name: webapp.service file
