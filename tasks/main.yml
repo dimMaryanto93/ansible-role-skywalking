@@ -70,12 +70,6 @@
       dest: /etc/sysconfig/skywalking-oap
       mode: 7777
 
-  - name: Find *.jar files into folder {{ skywalking_directory_name.stdout }}
-    ansible.builtin.find:
-      paths: "{{ skywalking_directory_name.stdout }}/oap-libs"
-      patterns: '*.jar'
-    register: oap_jars
-
   - name: filter skywalking-oap classpath files
     set_fact:
       oap_classpath: "{{ oap_jars.files | map(attribute='path') }}"
