@@ -17,7 +17,7 @@ Type=simple
 ExecStartPre=mkdir -p "${OAP_LOG_DIR}"
 
 #ExecStart=java -Xms{{skywalking_oap_jvm_xms}}M -Xmx{{ skywalking_oap_jvm_xmx }}M -Doap.logDir=${OAP_LOG_DIR} -classpath {{skywalking_directory_name.stdout}}/config:{% for jar_lib in oap_classpath -%}{{jar_lib}}:{% endfor %} org.apache.skywalking.oap.server.starter.OAPServerStartUp
-ExecStart=/usr/bin/nohup {{ skywalking_directory_name.stdout }}/bin/oapService.sh
+ExecStart={{ skywalking_directory_name.stdout }}/bin/oapService.sh
 
 Restart=always
 RestartSec=30
